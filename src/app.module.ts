@@ -12,11 +12,19 @@ import { KlipController } from './klip/klip.controller';
 import { KlipModule } from './klip/klip.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { LoggingInterceptor } from './interceptors/logging.inerceptor';
+import { TransformInterceptor } from "./interceptors/transform.interceptor";
 
 @Module({
   imports: [KlipModule, AuthModule, UsersModule],
   controllers: [AppController, KlipController],
-  providers: [AppService, KlipService],
+  providers: [
+    AppService,
+    KlipService,
+    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
+    { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
+  ],
 })
 export class AppModule implements NestModule {
   configure(customer: MiddlewareConsumer): any {

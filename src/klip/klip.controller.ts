@@ -5,6 +5,8 @@ import {
   Get,
   Param,
   Post,
+  SetMetadata,
+  UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { KlipService } from './klip.service';
@@ -15,10 +17,14 @@ import { JoiValidationPipe } from '../pipe/joi.validation.pipe';
 import { userSchema } from './schema/user.schema';
 import { adminSchema } from './schema/admin.schema';
 import { CreateAdminKlipDto } from './dto/admin.dto';
+import { Roles } from '../roles/roles.decorator';
+import { LoggingInterceptor } from '../interceptors/logging.inerceptor';
 
 @Controller('/v1/klip')
+@UseInterceptors(LoggingInterceptor)
 export class KlipController {
   constructor(private klipService: KlipService) {}
+
   @Get('tx-receipt/:tx')
   getTxReceipt(
     @Param('tx', ValidationPipe)
@@ -39,6 +45,7 @@ export class KlipController {
 
   @Post('tx-create')
   @UsePipes(new JoiValidationPipe(userSchema))
+  @Roles('admin')
   createKlip(@Body() CreateUserKlipDto: CreateUserKlipDto) {
     console.log(12341414, CreateUserKlipDto);
   }
